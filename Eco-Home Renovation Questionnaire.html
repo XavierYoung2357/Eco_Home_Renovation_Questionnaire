@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eco-Home Renovation Quotation</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>GaeaSoft Eco-Home Renovator</h1>
+            <p>Sustainable Living Quotation System</p>
+        </header>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar"></div>
+        </div>
+
+        <!-- Welcome Section -->
+        <section id="welcome" class="section active">
+            <div class="welcome-content">
+                <h2>Welcome to Your Eco-Renovation Journey</h2>
+                <p>Let's create a personalized quotation for your sustainable home transformation.</p>
+                <p>This questionnaire will help us understand:</p>
+                <ul>
+                    <li>Your property details and current systems</li>
+                    <li>Your renovation goals and priorities</li>
+                    <li>Eco-friendly features you'd like to implement</li>
+                    <li>Your budget and timeline expectations</li>
+                </ul>
+                <p style="margin-top: 30px;">The process takes about 5-10 minutes to complete.</p>
+                <div class="button-group">
+                    <button class="btn-primary" onclick="goToSection('property')">Get Started</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Step 1: Property Details -->
+        <section id="property" class="section">
+            <h2>Step 1: Property Details</h2>
+            <p>Tell us about your property</p>
+
+            <div class="form-group">
+                <label for="propertyType">Property Type</label>
+                <select id="propertyType">
+                    <option value="">Select property type</option>
+                    <option value="detached">Detached House</option>
+                    <option value="semi-detached">Semi-Detached House</option>
+                    <option value="terraced">Terraced House</option>
+                    <option value="apartment">Apartment/Flat</option>
+                    <option value="bungalow">Bungalow</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="propertyAge">Property Age (years)</label>
+                <input type="number" id="propertyAge" placeholder="e.g., 25">
+            </div>
+
+            <div class="form-group">
+                <label for="floorArea">Total Floor Area (sq ft)</label>
+                <input type="number" id="floorArea" placeholder="e.g., 1500">
+            </div>
+
+            <div class="form-group">
+                <label for="bedrooms">Number of Bedrooms</label>
+                <input type="number" id="bedrooms" placeholder="e.g., 3">
+            </div>
+
+            <div class="form-group">
+                <label for="location">Location/Postcode</label>
+                <input type="text" id="location" placeholder="Enter your postcode">
+            </div>
+
+            <div class="button-group">
+                <button class="btn-secondary" onclick="goToSection('welcome')">Back</button>
+                <button class="btn-primary" onclick="goToSection('systems')">Next</button>
+            </div>
+        </section>
+
+        <!-- Step 2: Current Systems -->
+        <section id="systems" class="section">
+            <h2>Step 2: Current Systems</h2>
+            <p>Information about your existing home systems</p>
+
+            <div class="form-group">
+                <label for="heatingSystem">Current Heating System</label>
+                <select id="heatingSystem">
+                    <option value="">Select heating system</option>
+                    <option value="gas-boiler">Gas Boiler</option>
+                    <option value="oil-boiler">Oil Boiler</option>
+                    <option value="electric">Electric Heating</option>
+                    <option value="heat-pump">Heat Pump</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="insulation">Current Insulation Level</label>
+                <select id="insulation">
+                    <option value="">Select insulation level</option>
+                    <option value="none">None/Minimal</option>
+                    <option value="partial">Partial</option>
+                    <option value="good">Good</option>
+                    <option value="excellent">Excellent</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="windows">Window Type</label>
+                <select id="windows">
+                    <option value="">Select window type</option>
+                    <option value="single">Single Glazed</option>
+                    <option value="double">Double Glazed</option>
+                    <option value="triple">Triple Glazed</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="energyBill">Average Monthly Energy Bill (£)</label>
+                <input type="number" id="energyBill" placeholder="e.g., 150">
+            </div>
+
+            <div class="button-group">
+                <button class="btn-secondary" onclick="goToSection('property')">Back</button>
+                <button class="btn-primary" onclick="goToSection('goals')">Next</button>
+            </div>
+        </section>
+
+        <!-- Step 3: Renovation Goals -->
+        <section id="goals" class="section">
+            <h2>Step 3: Renovation Goals</h2>
+            <p>What are your primary objectives? (Select all that apply)</p>
+
+            <div class="checkbox-group">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="goal-energy" name="goals" value="energy">
+                    <label for="goal-energy">Reduce energy consumption and bills</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="goal-carbon" name="goals" value="carbon">
+                    <label for="goal-carbon">Lower carbon footprint</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="goal-comfort" name="goals" value="comfort">
+                    <label for="goal-comfort">Improve home comfort</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="goal-value" name="goals" value="value">
+                    <label for="goal-value">Increase property value</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="goal-renewable" name="goals" value="renewable">
+                    <label for="goal-renewable">Generate renewable energy</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="goal-health" name="goals" value="health">
+                    <label for="goal-health">Improve air quality and health</label>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-secondary" onclick="goToSection('systems')">Back</button>
+                <button class="btn-primary" onclick="goToSection('features')">Next</button>
+            </div>
+        </section>
+
+        <!-- Step 4: Eco Features Selection -->
+        <section id="features" class="section">
+            <h2>Step 4: Eco-Friendly Features</h2>
+            <p>Which sustainable upgrades interest you? (Select all that apply)</p>
+            
+            <div style="margin-bottom: 20px;">
+                <button class="btn-primary" onclick="showRecommendations()" style="width: 100%;">
+                    Auto-Recommend from Input
+                </button>
+            </div>
+
+            <div class="checkbox-group">
+                <div class="checkbox-item">
+                    <input type="checkbox" id="feature-solar" name="features" value="solar">
+                    <label for="feature-solar">Solar Panels - Generate clean electricity</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="feature-heatpump" name="features" value="heatpump">
+                    <label for="feature-heatpump">Air Source Heat Pump - Efficient heating</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="feature-insulation" name="features" value="insulation">
+                    <label for="feature-insulation">Advanced Insulation - Walls, roof, floors</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="feature-windows" name="features" value="windows">
+                    <label for="feature-windows">Energy-Efficient Windows - Triple glazing</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="feature-water" name="features" value="water">
+                    <label for="feature-water">Rainwater Harvesting System</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="feature-battery" name="features" value="battery">
+                    <label for="feature-battery">Battery Storage - Store solar energy</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="feature-ventilation" name="features" value="ventilation">
+                    <label for="feature-ventilation">MVHR System - Heat recovery ventilation</label>
+                </div>
+                <div class="checkbox-item">
+                    <input type="checkbox" id="feature-smart" name="features" value="smart">
+                    <label for="feature-smart">Smart Home Energy Management</label>
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-secondary" onclick="goToSection('goals')">Back</button>
+                <button class="btn-primary" onclick="goToSection('budget')">Next</button>
+            </div>
+        </section>
+
+        <!-- Step 5: Budget & Timeline -->
+        <section id="budget" class="section">
+            <h2>Step 5: Budget & Timeline</h2>
+            <p>Help us understand your investment capacity and timeframe</p>
+
+            <div class="form-group">
+                <label for="budgetRange">Budget Range (RM)</label>
+                <select id="budgetRange">
+                    <option value="">Select budget range</option>
+                    <option value="5000-15000">RM5,000 - RM15,000</option>
+                    <option value="15000-30000">RM15,000 - RM30,000</option>
+                    <option value="30000-50000">RM30,000 - RM50,000</option>
+                    <option value="50000-75000">RM50,000 - RM75,000</option>
+                    <option value="75000+">RM75,000+</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="timeline">Preferred Timeline</label>
+                <select id="timeline">
+                    <option value="">Select timeline</option>
+                    <option value="urgent">Within 3 months</option>
+                    <option value="soon">3-6 months</option>
+                    <option value="flexible">6-12 months</option>
+                    <option value="planning">Just planning for now</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Priority</label>
+                <div class="radio-group">
+                    <div class="radio-item">
+                        <input type="radio" id="priority-cost" name="priority" value="cost">
+                        <label for="priority-cost">Cost savings - Minimize upfront investment</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="priority-balanced" name="priority" value="balanced">
+                        <label for="priority-balanced">Balanced - Mix of cost and performance</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="priority-performance" name="priority" value="performance">
+                        <label for="priority-performance">Performance - Best technology available</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="contactName">Your Name</label>
+                <input type="text" id="contactName" placeholder="Enter your name">
+            </div>
+
+            <div class="form-group">
+                <label for="contactEmail">Email Address</label>
+                <input type="email" id="contactEmail" placeholder="your.email@example.com">
+            </div>
+
+            <div class="button-group">
+                <button class="btn-secondary" onclick="goToSection('features')">Back</button>
+                <button class="btn-primary" onclick="generateQuote()">Generate Quote</button>
+            </div>
+        </section>
+
+        <!-- Results Section -->
+        <section id="results" class="section">
+            <h2>Your Eco-Renovation Quotation</h2>
+            <p>Based on your responses, here's your personalized estimate</p>
+
+            <div class="quote-summary" id="quoteSummary">
+                <!-- Quote details will be populated by JavaScript -->
+            </div>
+
+            <div class="form-group">
+                <label for="additionalNotes">Additional Notes/Requirements</label>
+                <textarea id="additionalNotes" rows="4" placeholder="Any specific requirements or questions?"></textarea>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-secondary" onclick="goToSection('budget')">Back</button>
+                <button class="btn-primary" onclick="saveQuote()">Save Quote</button>
+                <button class="btn-primary" onclick="startOver()">Start New Quote</button>
+            </div>
+        </section>
+
+        <section id="data-management" class="section">
+            <h2>Data Management</h2>
+            <p>Manage custom features and data imports/exports</p>
+
+            <div class="data-tabs">
+                <button class="tab-btn active" onclick="switchDataTab('custom-feature')">Add Custom Feature</button>
+                <button class="tab-btn" onclick="switchDataTab('import-csv')">Import CSV</button>
+                <button class="tab-btn" onclick="switchDataTab('export-data')">Export Data</button>
+                <button class="tab-btn" onclick="switchDataTab('manage-features')">Manage Features</button>
+            </div>
+
+            <!-- Add Custom Feature Tab -->
+            <div id="custom-feature-tab" class="data-tab-content active">
+                <h3>Add Custom Feature</h3>
+                <p>Create a new eco-friendly feature for quotations</p>
+
+                <div class="form-group">
+                    <label for="customFeatureId">Feature ID (unique identifier)</label>
+                    <input type="text" id="customFeatureId" placeholder="e.g., custom-solar-panel">
+                </div>
+
+                <div class="form-group">
+                    <label for="customFeatureName">Feature Name</label>
+                    <input type="text" id="customFeatureName" placeholder="e.g., Premium Solar Panel System">
+                </div>
+
+                <div class="form-group">
+                    <label for="customFeatureDescription">Description</label>
+                    <input type="text" id="customFeatureDescription" placeholder="e.g., High-efficiency solar panels">
+                </div>
+
+                <div class="form-group">
+                    <label for="customBaseCost">Base Cost (£)</label>
+                    <input type="number" id="customBaseCost" placeholder="e.g., 10000">
+                </div>
+
+                <div class="form-group">
+                    <label for="customCostPerSqFt">Cost Per Sq Ft (£)</label>
+                    <input type="number" id="customCostPerSqFt" placeholder="e.g., 5" step="0.1">
+                </div>
+
+                <div class="form-group">
+                    <label for="customCategory">Category</label>
+                    <select id="customCategory">
+                        <option value="energy-generation">Energy Generation</option>
+                        <option value="heating">Heating Systems</option>
+                        <option value="insulation">Insulation</option>
+                        <option value="water">Water Management</option>
+                        <option value="energy-storage">Energy Storage</option>
+                        <option value="ventilation">Ventilation</option>
+                        <option value="automation">Smart Automation</option>
+                        <option value="custom">Custom Category</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="customSavingsPercentage">Savings Percentage (0-1)</label>
+                    <input type="number" id="customSavingsPercentage" placeholder="e.g., 0.25" step="0.01" min="0" max="1">
+                </div>
+
+                <div class="form-group">
+                    <label for="customInstallationDays">Installation Time</label>
+                    <input type="text" id="customInstallationDays" placeholder="e.g., 3-5 days">
+                </div>
+
+                <div class="form-group">
+                    <label for="customMaintenanceCost">Annual Maintenance Cost (£)</label>
+                    <input type="number" id="customMaintenanceCost" placeholder="e.g., 100">
+                </div>
+
+                <div class="form-group">
+                    <label for="customLifespanYears">Lifespan (years)</label>
+                    <input type="number" id="customLifespanYears" placeholder="e.g., 25">
+                </div>
+
+                <div class="form-group">
+                    <label for="customGrantEligible">Grant Eligible?</label>
+                    <select id="customGrantEligible">
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="customPriority">Priority (1-5, lower = higher priority)</label>
+                    <input type="number" id="customPriority" placeholder="e.g., 3" min="1" max="5">
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-secondary" onclick="clearCustomFeatureForm()">Clear Form</button>
+                    <button class="btn-primary" onclick="addCustomFeature()">Add Feature</button>
+                </div>
+            </div>
+
+            <!-- Import CSV Tab -->
+            <div id="import-csv-tab" class="data-tab-content">
+                <h3>Import CSV Data</h3>
+                <p>Upload CSV files to add multiple features at once</p>
+
+                <div class="form-group">
+                    <label for="csvFileInput">Select CSV File</label>
+                    <input type="file" id="csvFileInput" accept=".csv" onchange="handleCSVUpload(event)">
+                </div>
+
+                <div class="form-group">
+                    <label for="csvDataType">Data Type</label>
+                    <select id="csvDataType">
+                        <option value="features">Features</option>
+                        <option value="property-multipliers">Property Multipliers</option>
+                        <option value="categories">Categories</option>
+                    </select>
+                </div>
+
+                <div id="csvPreview" style="margin: 20px 0; padding: 15px; background: #f5f5f5; border-radius: 6px; display: none;">
+                    <h4>CSV Preview</h4>
+                    <div id="csvPreviewContent"></div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-secondary" onclick="clearCSVImport()">Clear</button>
+                    <button class="btn-primary" onclick="importCSVData()">Import Data</button>
+                </div>
+
+                <div style="margin-top: 30px; padding: 15px; background: #e3f2fd; border-radius: 6px;">
+                    <h4>CSV Format Requirements</h4>
+                    <p><strong>Features CSV headers:</strong></p>
+                    <code>id,name,description,baseCost,costPerSqFt,category,savingsPercentage,installationDays,maintenanceCost,lifespanYears,grantEligible,priority</code>
+                </div>
+            </div>
+
+            <!-- Export Data Tab -->
+            <div id="export-data-tab" class="data-tab-content">
+                <h3>Export Data</h3>
+                <p>Download your current feature data as CSV files</p>
+
+                <div class="form-group">
+                    <label>Select Data to Export</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="export-features" checked>
+                            <label for="export-features">Features Data</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="export-multipliers">
+                            <label for="export-multipliers">Property Multipliers</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="export-categories">
+                            <label for="export-categories">Categories</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="export-custom-only">
+                            <label for="export-custom-only">Custom Features Only</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-primary" onclick="exportDataAsCSV()">Download CSV</button>
+                    <button class="btn-primary" onclick="exportDataAsJSON()">Download JSON</button>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <p><strong>Current Data Summary:</strong></p>
+                    <ul id="dataSummary">
+                        <li>Total Features: <span id="totalFeatures">0</span></li>
+                        <li>Custom Features: <span id="customFeatures">0</span></li>
+                        <li>Categories: <span id="totalCategories">0</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Manage Features Tab -->
+            <div id="manage-features-tab" class="data-tab-content">
+                <h3>Manage Features</h3>
+                <p>View, edit, or delete existing features</p>
+
+                <div class="form-group">
+                    <label for="featureFilter">Filter by Category</label>
+                    <select id="featureFilter" onchange="filterFeaturesList()">
+                        <option value="all">All Categories</option>
+                        <option value="energy-generation">Energy Generation</option>
+                        <option value="heating">Heating Systems</option>
+                        <option value="insulation">Insulation</option>
+                        <option value="water">Water Management</option>
+                        <option value="energy-storage">Energy Storage</option>
+                        <option value="ventilation">Ventilation</option>
+                        <option value="automation">Smart Automation</option>
+                        <option value="custom">Custom</option>
+                    </select>
+                </div>
+
+                <div id="featuresList" class="features-list">
+                    <!-- Features will be populated dynamically -->
+                </div>
+            </div>
+
+            <div class="button-group" style="margin-top: 30px;">
+                <button class="btn-secondary" onclick="goToSection('welcome')">Back to Home</button>
+                <button class="btn-primary" onclick="goToSection('features')">Continue to Quote</button>
+            </div>
+        </section>
+    </div>
+
+    <!-- Recommendation Popup Modal -->
+    <div id="recommendationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>💡 Personalized Recommendations</h2>
+                <span class="modal-close" onclick="closeRecommendationModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="recommendationLoading" class="loading-spinner">
+                    <div class="spinner"></div>
+                    <p>Analyzing your property and goals...</p>
+                </div>
+                <div id="recommendationContent" style="display: none;">
+                    <!-- Recommendations will be populated here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeRecommendationModal()">Close</button>
+                <button class="btn-primary" onclick="applyRecommendations()">Apply Selected Recommendations</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load scripts in order: Data Loader, Data Management, Recommendations, Main App -->
+    <script src="data-loader.js"></script>
+    <script src="data-manager.js"></script>
+    <script src="recommender.js"></script>
+    <script src="app.js"></script>
+
+</body>
+</html>
