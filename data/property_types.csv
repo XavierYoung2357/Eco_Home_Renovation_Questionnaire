@@ -1,0 +1,6 @@
+propertyType,multiplier,description
+detached,1.2,Larger standalone properties
+semi-detached,1.0,Standard reference
+terraced,0.9,Smaller footprint
+apartment,0.7,Compact living space
+bungalow,1.1,Single-story properties

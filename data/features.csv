@@ -1,0 +1,9 @@
+id,name,description,baseCost,costPerSqFt,category,savingsPercentage,installationDays,maintenanceCost,lifespanYears,grantEligible,priority
+solar,Solar Panels,Generate clean electricity,8000,5,energy-generation,0.25,2-3,100,25,true,2
+heatpump,Air Source Heat Pump,Efficient heating,12000,8,heating,0.30,3-5,150,20,true,3
+insulation,Advanced Insulation,Walls roof and floors,6000,4,insulation,0.20,5-7,50,40,true,1
+windows,Energy-Efficient Windows,Triple glazing,7000,45,insulation,0.15,3-5,50,30,false,2
+water,Rainwater Harvesting System,Collect and store rainwater,3000,0,water,0.05,2-3,75,20,false,4
+battery,Battery Storage,Store solar energy,5000,0,energy-storage,0.10,1-2,100,15,true,3
+ventilation,MVHR System,Heat recovery ventilation,4000,3,ventilation,0.12,3-4,100,20,false,3
+smart,Smart Home Energy Management,Intelligent energy control,2000,0,automation,0.08,1-2,50,10,false,5
