@@ -34,7 +34,7 @@ function addCustomFeature(){
             lifespanYears: parseInt(document.getElementById('customLifespanYears').value) || 0,
             grantEligible: document.getElementById('customGrantEligible').value === 'true',
             priority: parseInt(document.getElementById('customPriority').value) || 5,
-            isCustom: true // Mark as custom feature
+            isCustom: true //Custom feature designator
         };
 
         if(!featureData.id || !featureData.name){
@@ -66,6 +66,8 @@ function addCustomFeature(){
 }
 
 function addFeatureToHTMLForm(feature){
+    const featuresSection = document.querySelector('#features .checkbox-group');
+
     if (document.getElementById(`feature-${feature.id}`)) {
         return;
     }
@@ -267,8 +269,8 @@ function exportDataAsJSON() {
 function convertToCSV(data,headers){
     if(!data||data.length === 0)return '';
 
-    const csvRow = [];
-    csvRow.push(headers.join(','));
+    const csvRows = [];
+    csvRows.push(headers.join(','));
     data.forEach(item => {
         const values = headers.map(header => {
             const value = item[header];
