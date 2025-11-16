@@ -81,4 +81,15 @@ function startOver() {
     }
 }
 
-updateProgress('welcome');
+function showNotification(message, type = 'info') {
+    console.log(`[${type.toUpperCase()}] ${message}`);
+    if (type === 'error') {
+        alert(message);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', async function() {
+    await DataLoader.loadAll();
+    updateProgress('welcome');
+});
+
