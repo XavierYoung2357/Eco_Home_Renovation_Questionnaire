@@ -16,7 +16,7 @@ const DataLoader = {
 
         for (let i = 1; i < lines.length; i++) {
             const line = lines[i].trim();
-            if (!line) continue; // Skip empty lines
+            if (!line) continue;
 
             const values = this.parseCSVLine(line);
             const obj = {};
@@ -61,17 +61,15 @@ const DataLoader = {
         return values;
     },
 
-    async loadAll() {
+    async loadCSVData() {
         try {
-            console.log('Starting to load CSV data...');
-            
             const [featuresCSV, multipliersCSV, categoriesCSV] = await Promise.all([
                 fetch('data/features.csv').then(r => {
                     if (!r.ok) throw new Error(`Failed to load features.csv: ${r.status}`);
                     return r.text();
                 }),
                 fetch('data/property_types.csv').then(r => {
-                    if (!r.ok) throw new Error(`Failed to load property-multipliers.csv: ${r.status}`);
+                    if (!r.ok) throw new Error(`Failed to load property_types.csv: ${r.status}`);
                     return r.text();
                 }),
                 fetch('data/categories.csv').then(r => {
@@ -82,16 +80,15 @@ const DataLoader = {
 
             // Parse features
             this.features = this.parseCSV(featuresCSV);
-            console.log(`Loaded ${this.features.length} features`);
+            console.log(`Loaded ${this.features.length} features from CSV`);
 
-            // Parse and structure property multipliers
+            // Parse property multipliers
             const multiplierData = this.parseCSV(multipliersCSV);
             multiplierData.forEach(item => {
-                this.propertyMultipliers[item.propertyType] = item.multiplier;
+                this.propertyMultipliers[item.propertyType] = parseFloat(item.multiplier) || 1.0;
             });
-            console.log(`Loaded ${Object.keys(this.propertyMultipliers).length} property multipliers`);
 
-            // Parse and structure categories
+            // Parse categories
             const categoryData = this.parseCSV(categoriesCSV);
             categoryData.forEach(item => {
                 this.categories[item.id] = {
@@ -100,22 +97,16 @@ const DataLoader = {
                     icon: item.icon || ''
                 };
             });
-            console.log(`Loaded ${Object.keys(this.categories).length} categories`);
 
-            this.isLoaded = true;
-            this.loadingError = null;
             return true;
-
         } catch (error) {
-            console.error('Error loading CSV data:', error);
-            this.loadingError = error.message;
-            this.loadFallbackData();
-            return false;
+            console.warn('CSV loading failed:', error.message);
+            throw error;
         }
     },
 
     loadFallbackData() {
-        console.warn('Loading fallback data due to CSV load failure');
+        console.log('Loading fallback data...');
         
         this.features = [
             {
@@ -126,7 +117,7 @@ const DataLoader = {
                 costPerSqFt: 5,
                 category: 'energy-generation',
                 savingsPercentage: 0.25,
-                installationDays: '2-3',
+                installationDays: '2-3 days',
                 maintenanceCost: 100,
                 lifespanYears: 25,
                 grantEligible: true,
@@ -135,12 +126,12 @@ const DataLoader = {
             {
                 id: 'heatpump',
                 name: 'Air Source Heat Pump',
-                description: 'Efficient heating',
+                description: 'Efficient heating system',
                 baseCost: 12000,
                 costPerSqFt: 8,
                 category: 'heating',
                 savingsPercentage: 0.30,
-                installationDays: '3-5',
+                installationDays: '3-5 days',
                 maintenanceCost: 150,
                 lifespanYears: 20,
                 grantEligible: true,
@@ -154,7 +145,7 @@ const DataLoader = {
                 costPerSqFt: 4,
                 category: 'insulation',
                 savingsPercentage: 0.20,
-                installationDays: '5-7',
+                installationDays: '5-7 days',
                 maintenanceCost: 50,
                 lifespanYears: 40,
                 grantEligible: true,
@@ -168,7 +159,7 @@ const DataLoader = {
                 costPerSqFt: 45,
                 category: 'insulation',
                 savingsPercentage: 0.15,
-                installationDays: '3-5',
+                installationDays: '3-5 days',
                 maintenanceCost: 50,
                 lifespanYears: 30,
                 grantEligible: false,
@@ -182,7 +173,7 @@ const DataLoader = {
                 costPerSqFt: 0,
                 category: 'water',
                 savingsPercentage: 0.05,
-                installationDays: '2-3',
+                installationDays: '2-3 days',
                 maintenanceCost: 75,
                 lifespanYears: 20,
                 grantEligible: false,
@@ -196,7 +187,7 @@ const DataLoader = {
                 costPerSqFt: 0,
                 category: 'energy-storage',
                 savingsPercentage: 0.10,
-                installationDays: '1-2',
+                installationDays: '1-2 days',
                 maintenanceCost: 100,
                 lifespanYears: 15,
                 grantEligible: true,
@@ -210,7 +201,7 @@ const DataLoader = {
                 costPerSqFt: 3,
                 category: 'ventilation',
                 savingsPercentage: 0.12,
-                installationDays: '3-4',
+                installationDays: '3-4 days',
                 maintenanceCost: 100,
                 lifespanYears: 20,
                 grantEligible: false,
@@ -224,7 +215,7 @@ const DataLoader = {
                 costPerSqFt: 0,
                 category: 'automation',
                 savingsPercentage: 0.08,
-                installationDays: '1-2',
+                installationDays: '1-2 days',
                 maintenanceCost: 50,
                 lifespanYears: 10,
                 grantEligible: false,
@@ -241,16 +232,182 @@ const DataLoader = {
         };
 
         this.categories = {
-            'energy-generation': { name: 'Energy Generation', description: 'Produce renewable energy', icon: '⚡' },
-            'heating': { name: 'Heating Systems', description: 'Efficient climate control', icon: '🔥' },
-            'insulation': { name: 'Insulation', description: 'Reduce heat loss', icon: '🏠' },
-            'water': { name: 'Water Management', description: 'Sustainable water usage', icon: '💧' },
-            'energy-storage': { name: 'Energy Storage', description: 'Store renewable energy', icon: '🔋' },
-            'ventilation': { name: 'Ventilation', description: 'Fresh air circulation', icon: '🌬️' },
-            'automation': { name: 'Smart Automation', description: 'Intelligent controls', icon: '🤖' }
+            'energy-generation': { 
+                name: 'Energy Generation', 
+                description: 'Produce renewable energy', 
+                icon: '⚡' 
+            },
+            'heating': { 
+                name: 'Heating Systems', 
+                description: 'Efficient climate control', 
+                icon: '🔥' 
+            },
+            'insulation': { 
+                name: 'Insulation', 
+                description: 'Reduce heat loss', 
+                icon: '🏠' 
+            },
+            'water': { 
+                name: 'Water Management', 
+                description: 'Sustainable water usage', 
+                icon: '💧' 
+            },
+            'energy-storage': { 
+                name: 'Energy Storage', 
+                description: 'Store renewable energy', 
+                icon: '🔋' 
+            },
+            'ventilation': { 
+                name: 'Ventilation', 
+                description: 'Fresh air circulation', 
+                icon: '🌬️' 
+            },
+            'automation': { 
+                name: 'Smart Automation', 
+                description: 'Intelligent controls', 
+                icon: '🤖' 
+            }
         };
+    },
 
-        this.isLoaded = true;
+    loadCustomFeaturesFromStorage() {
+        try {
+            const saved = localStorage.getItem('customFeatures');
+            if (saved) {
+                const customFeatures = JSON.parse(saved);
+                customFeatures.forEach(feature => {
+                    // Check for duplicates
+                    const existingIndex = this.features.findIndex(f => f.id === feature.id);
+                    if (existingIndex >= 0) {
+                        // Update existing feature
+                        this.features[existingIndex] = { ...feature, isCustom: true };
+                    } else {
+                        // Add new feature
+                        this.features.push({ ...feature, isCustom: true });
+                    }
+                });
+                console.log(`Loaded ${customFeatures.length} custom features from storage`);
+            }
+        } catch (error) {
+            console.error('Error loading custom features:', error);
+        }
+    },
+
+    async loadAll() {
+        try {
+            console.log('Starting data initialization...');
+            
+            // Show loading indicator
+            this.showLoadingIndicator(true);
+            
+            try {
+                // Try loading CSV data first
+                await this.loadCSVData();
+                console.log('CSV data loaded successfully');
+            } catch (csvError) {
+                console.warn('CSV load failed, using fallback data:', csvError.message);
+                this.loadFallbackData();
+            }
+            
+            // Always load custom features after base data
+            this.loadCustomFeaturesFromStorage();
+            
+            // Add custom features to the HTML form
+            this.features.forEach(feature => {
+                if (feature.isCustom) {
+                    this.addFeatureToHTMLForm(feature);
+                }
+            });
+            
+            this.isLoaded = true;
+            this.loadingError = null;
+            
+            // Hide loading indicator
+            this.showLoadingIndicator(false);
+            
+            // Initialize UI components that depend on data
+            this.initializeDataDependentUI();
+            
+            return true;
+
+        } catch (error) {
+            console.error('Critical error during data loading:', error);
+            this.loadingError = error.message;
+            this.showLoadingIndicator(false);
+            this.showErrorMessage('Failed to initialize application data. Some features may not work correctly.');
+            return false;
+        }
+    },
+
+    showLoadingIndicator(show) {
+        // Create or update loading indicator
+        let loader = document.getElementById('dataLoader');
+        if (!loader && show) {
+            loader = document.createElement('div');
+            loader.id = 'dataLoader';
+            loader.className = 'data-loader';
+            loader.innerHTML = `
+                <div class="loader-content">
+                    <div class="spinner"></div>
+                    <p>Loading eco-home data...</p>
+                </div>
+            `;
+            document.body.appendChild(loader);
+        }
+        
+        if (loader) {
+            loader.style.display = show ? 'flex' : 'none';
+        }
+    },
+
+    showErrorMessage(message) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-notification';
+        errorDiv.innerHTML = `
+            <strong>⚠️ Warning:</strong> ${message}
+            <button onclick="this.parentElement.remove()">×</button>
+        `;
+        errorDiv.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 15px;
+            border-radius: 6px;
+            z-index: 9999;
+            max-width: 400px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        `;
+        document.body.appendChild(errorDiv);
+        
+        // Auto-remove after 10 seconds
+        setTimeout(() => errorDiv.remove(), 10000);
+    },
+
+    addFeatureToHTMLForm(feature) {
+        const featuresSection = document.querySelector('#features .checkbox-group');
+        if (!featuresSection) return;
+        
+        // Check if feature already exists in the form
+        if (document.getElementById(`feature-${feature.id}`)) {
+            return;
+        }
+        
+        const featureHTML = `
+            <div class="checkbox-item">
+                <input type="checkbox" id="feature-${feature.id}" name="features" value="${feature.id}">
+                <label for="feature-${feature.id}">${feature.name} - ${feature.description}</label>
+            </div>
+        `;
+        featuresSection.insertAdjacentHTML('beforeend', featureHTML);
+    },
+
+    initializeDataDependentUI() {
+        // Update any UI elements that depend on loaded data
+        if (typeof updateDataSummary === 'function') {
+            updateDataSummary();
+        }
     },
 
     getFeature(id) {
@@ -299,17 +456,42 @@ const DataLoader = {
         if (!feature) return Infinity;
 
         const paybackYears = cost / annualSavings;
-        return Math.round(paybackYears * 10) / 10; // Round to 1 decimal
+        return Math.round(paybackYears * 10) / 10;
+    },
+
+    calculateROI(featureId, cost, annualSavings) {
+        const feature = this.getFeature(featureId);
+        if (!feature || !annualSavings) return 0;
+        
+        // Calculate total savings over lifespan minus maintenance costs
+        const totalSavings = (annualSavings * feature.lifespanYears) - 
+                           (feature.maintenanceCost * feature.lifespanYears);
+        const roi = ((totalSavings - cost) / cost) * 100;
+        
+        return Math.round(roi);
     },
 
     getRecommendations(propertyType, goals, budget) {
         return this.features
             .filter(f => {
-                // Filter based on goals if needed
-                return true; // For now, return all
+                // Filter based on budget if provided
+                if (budget) {
+                    const cost = this.calculateCost(f.id, propertyType, 1500);
+                    const maxBudget = this.parseBudgetRange(budget);
+                    if (cost > maxBudget) return false;
+                }
+                return true;
             })
             .sort((a, b) => a.priority - b.priority)
             .slice(0, 5);
+    },
+
+    parseBudgetRange(budgetRange) {
+        if (!budgetRange) return 0;
+        if (budgetRange === '75000+') return 100000;
+        
+        const parts = budgetRange.split('-');
+        return parseInt(parts[1]) || parseInt(parts[0]) || 0;
     },
 
     ensureLoaded() {
@@ -319,6 +501,7 @@ const DataLoader = {
     }
 };
 
+// Export for Node.js environments
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = DataLoader;
 }

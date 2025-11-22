@@ -1,25 +1,33 @@
-const Recommender = {
-    recommendations:[],
+/* ================================
+   RECOMMENDER MODULE
+   Provides personalized recommendations based on property and user goals
+   ================================ */
+
+   const Recommender = {
+    recommendations: [],
     selectedRecommendations: new Set(),
 
-    async showRecommendations(){
+    async showRecommendations() {
         const modal = document.getElementById('recommendationModal');
         modal.classList.add('active');
 
-        document.getElementById('recommendationLoading').style.display ='block';
-        document.getElementById('recommendationContent').style.display ='none';
+        // Show loading
+        document.getElementById('recommendationLoading').style.display = 'block';
+        document.getElementById('recommendationContent').style.display = 'none';
 
-        await new Promise(resolve =>setTimeout(resolve,800));
+        // Simulate analysis delay for better UX
+        await new Promise(resolve => setTimeout(resolve, 800));
 
+        // Generate recommendations
         this.generateRecommendations();
 
+        // Display them
         this.displayRecommendations();
 
-        document.getElementById('recommendationLoading').style.display ='none';
-        document.getElementById('recommendationContent').style.display ='block';
-
+        // Hide loading, show content
+        document.getElementById('recommendationLoading').style.display = 'none';
+        document.getElementById('recommendationContent').style.display = 'block';
     },
-
 
     generateRecommendations() {
         // Collect user data
@@ -63,61 +71,83 @@ const Recommender = {
             };
         })
         .filter(rec => rec.score > 0) // Only show relevant recommendations
-        .sort((a, b) => b.score - a.score); // Sort by score descending
+        .sort((a, b) => b.score - a.score) // Sort by score descending
+        .slice(0, 8); // Limit to top 8 recommendations
     },
-
 
     calculateFeatureScore(feature, userData) {
         let score = 0;
         const reasons = [];
         
-
+        // Base score from priority (lower priority number = higher score)
         score += (6 - feature.priority) * 10;
         
-
+        // === PROPERTY AGE CONSIDERATIONS ===
         if (userData.propertyAge > 20) {
             if (feature.id === 'insulation' || feature.id === 'windows') {
                 score += 30;
                 reasons.push('Older properties benefit greatly from improved insulation');
             }
-        }
-        
-
-        if (userData.heatingSystem === 'gas-boiler' || userData.heatingSystem === 'oil-boiler') {
-            if (feature.id === 'heatpump') {
-                score += 40;
-                reasons.push('Upgrading from fossil fuel heating significantly reduces carbon footprint');
+            if (feature.id === 'heatpump' && userData.propertyAge > 40) {
+                score += 20;
+                reasons.push('Perfect time to upgrade from aging heating systems');
             }
         }
         
-
+        // === HEATING SYSTEM UPGRADES ===
+        if (userData.heatingSystem === 'gas-boiler' || userData.heatingSystem === 'oil-boiler') {
+            if (feature.id === 'heatpump') {
+                score += 40;
+                reasons.push('Upgrade from fossil fuel heating to reduce carbon footprint');
+            }
+            if (feature.category === 'energy-generation') {
+                score += 20;
+                reasons.push('Renewable energy complements fossil fuel reduction strategy');
+            }
+        }
+        
+        // === INSULATION PRIORITY ===
         if (userData.insulation === 'none' || userData.insulation === 'partial') {
             if (feature.id === 'insulation') {
                 score += 50;
                 reasons.push('Poor insulation is your biggest energy loss - should be priority #1');
             }
             if (feature.id === 'heatpump') {
-                score -= 20; // Don't recommend heat pump without good insulation
-                reasons.push('Note: Insulation should be improved before installing heat pump');
+                score -= 20;
+                reasons.push('Note: Improve insulation before installing heat pump for best efficiency');
+            }
+            if (feature.id === 'ventilation') {
+                score -= 10;
+                reasons.push('Ventilation systems work best with good insulation');
             }
         }
         
-
+        // === WINDOW UPGRADE NEEDS ===
         if (userData.windows === 'single') {
             if (feature.id === 'windows') {
                 score += 35;
                 reasons.push('Single glazing causes major heat loss - upgrade recommended');
             }
+        } else if (userData.windows === 'double' && userData.propertyAge > 15) {
+            if (feature.id === 'windows') {
+                score += 15;
+                reasons.push('Consider triple glazing for maximum efficiency');
+            }
         }
         
-
+        // === HIGH ENERGY BILLS ===
         if (userData.energyBill > 200) {
             if (feature.category === 'energy-generation' || feature.category === 'heating') {
                 score += 25;
                 reasons.push('High energy bills indicate significant savings potential');
             }
+            if (feature.savingsPercentage > 0.20) {
+                score += 20;
+                reasons.push('High-impact feature for reducing energy costs');
+            }
         }
         
+        // === GOAL ALIGNMENT ===
         if (userData.goals.includes('energy') && feature.savingsPercentage > 0.15) {
             score += 20;
             reasons.push('Aligns with your goal to reduce energy consumption');
@@ -125,7 +155,7 @@ const Recommender = {
         
         if (userData.goals.includes('carbon') && 
             (feature.category === 'energy-generation' || feature.category === 'heating')) {
-            score += 20;
+            score += 25;
             reasons.push('Helps achieve carbon footprint reduction goal');
         }
         
@@ -142,23 +172,44 @@ const Recommender = {
         
         if (userData.goals.includes('value') && feature.grantEligible) {
             score += 15;
-            reasons.push('Grant eligible - can increase property value cost-effectively');
+            reasons.push('Grant eligible - increases property value cost-effectively');
         }
         
+        if (userData.goals.includes('health') && feature.id === 'ventilation') {
+            score += 25;
+            reasons.push('Improves indoor air quality for better health');
+        }
+        
+        // === PROPERTY SIZE CONSIDERATIONS ===
         if (userData.floorArea > 2000) {
             if (feature.id === 'solar' || feature.id === 'smart') {
                 score += 15;
                 reasons.push('Larger properties benefit more from this upgrade');
             }
+            if (feature.id === 'heatpump') {
+                score += 10;
+                reasons.push('Heat pumps are efficient for larger spaces');
+            }
+        } else if (userData.floorArea < 1000) {
+            if (feature.costPerSqFt === 0) {
+                score += 10;
+                reasons.push('Fixed-cost upgrade suitable for smaller properties');
+            }
         }
         
+        // === BUDGET CONSIDERATIONS ===
         const estimatedCost = DataLoader.calculateCost(feature.id, userData.propertyType, userData.floorArea);
-        if (userData.maxBudget > 0 && estimatedCost > userData.maxBudget) {
-            score -= 30;
-            reasons.push('May exceed your budget range - consider phased installation');
+        if (userData.maxBudget > 0) {
+            if (estimatedCost > userData.maxBudget) {
+                score -= 30;
+                reasons.push('May exceed your budget - consider phased installation');
+            } else if (estimatedCost < userData.maxBudget * 0.3) {
+                score += 10;
+                reasons.push('Well within budget - excellent value');
+            }
         }
         
-
+        // === FEATURE DEPENDENCIES ===
         if (feature.id === 'battery') {
             const hasSolar = document.getElementById('feature-solar')?.checked;
             if (hasSolar) {
@@ -171,8 +222,17 @@ const Recommender = {
         }
         
         if (feature.id === 'smart') {
-            score += 10; // Always somewhat useful
-            reasons.push('Smart controls maximize efficiency of all systems');
+            const otherFeatures = document.querySelectorAll('input[name="features"]:checked').length;
+            if (otherFeatures > 2) {
+                score += 15;
+                reasons.push('Smart controls maximize efficiency of multiple systems');
+            }
+        }
+        
+        // === GRANT ELIGIBILITY BONUS ===
+        if (feature.grantEligible) {
+            score += 10;
+            reasons.push('Eligible for government grants - reduced net cost');
         }
         
         return {
@@ -181,15 +241,13 @@ const Recommender = {
         };
     },
 
-
     parseBudgetRange(rangeStr) {
         if (!rangeStr) return 0;
         if (rangeStr === '75000+') return 100000;
         
         const parts = rangeStr.split('-');
-        return parseInt(parts[1]) || 0;
+        return parseInt(parts[1]) || parseInt(parts[0]) || 0;
     },
-
 
     determinePriority(score) {
         if (score >= 80) return 'high';
@@ -197,15 +255,19 @@ const Recommender = {
         return 'low';
     },
 
-
     displayRecommendations() {
         const content = document.getElementById('recommendationContent');
         
         if (this.recommendations.length === 0) {
-            content.innerHTML = '<p style="text-align: center; color: #666;">Please complete the property details and goals sections to receive recommendations.</p>';
+            content.innerHTML = `
+                <p style="text-align: center; color: #666;">
+                    Please complete the property details and goals sections to receive personalized recommendations.
+                </p>
+            `;
             return;
         }
         
+        // Calculate totals
         const totalCost = this.recommendations.reduce((sum, rec) => sum + rec.estimatedCost, 0);
         const totalSavings = this.recommendations.reduce((sum, rec) => sum + rec.estimatedSavings, 0);
         const avgPayback = totalSavings > 0 ? (totalCost / totalSavings).toFixed(1) : 'N/A';
@@ -236,15 +298,20 @@ const Recommender = {
             </div>
         `;
         
+        // Display each recommendation
         this.recommendations.forEach((rec, index) => {
             const payback = rec.estimatedSavings > 0 ? 
                 (rec.estimatedCost / rec.estimatedSavings).toFixed(1) : 'N/A';
             
             html += `
-                <div class="recommendation-card" onclick="toggleRecommendation('${rec.feature.id}')" data-feature-id="${rec.feature.id}">
+                <div class="recommendation-card" onclick="Recommender.toggleRecommendation('${rec.feature.id}')" 
+                     data-feature-id="${rec.feature.id}">
                     <div class="recommendation-card-header">
-                        <input type="checkbox" class="recommendation-checkbox" id="rec-${rec.feature.id}" 
-                               onclick="event.stopPropagation();" onchange="toggleRecommendation('${rec.feature.id}')">
+                        <input type="checkbox" 
+                               class="recommendation-checkbox" 
+                               id="rec-${rec.feature.id}" 
+                               onclick="event.stopPropagation();" 
+                               onchange="Recommender.toggleRecommendation('${rec.feature.id}')">
                         <div class="recommendation-title">
                             <h4>
                                 ${index + 1}. ${rec.feature.name}
@@ -287,7 +354,7 @@ const Recommender = {
                         </div>
                         ${rec.feature.grantEligible ? `
                         <div class="detail-item">
-                            <span class="detail-icon">✓</span>
+                            <span class="detail-icon">✅</span>
                             <div class="detail-text">
                                 <div class="detail-label">Grant Eligible</div>
                                 <div class="detail-value">Yes</div>
@@ -299,7 +366,7 @@ const Recommender = {
                     ${rec.reasons.length > 0 ? `
                     <div class="recommendation-reason">
                         <strong>Why we recommend this:</strong><br>
-                        ${rec.reasons.join('<br>')}
+                        ${rec.reasons.map(r => `• ${r}`).join('<br>')}
                     </div>
                     ` : ''}
                 </div>
@@ -309,32 +376,33 @@ const Recommender = {
         content.innerHTML = html;
     },
 
-
     toggleRecommendation(featureId) {
         const checkbox = document.getElementById(`rec-${featureId}`);
         const card = document.querySelector(`.recommendation-card[data-feature-id="${featureId}"]`);
         
         if (this.selectedRecommendations.has(featureId)) {
             this.selectedRecommendations.delete(featureId);
-            checkbox.checked = false;
-            card.classList.remove('selected');
+            if (checkbox) checkbox.checked = false;
+            if (card) card.classList.remove('selected');
         } else {
             this.selectedRecommendations.add(featureId);
-            checkbox.checked = true;
-            card.classList.add('selected');
+            if (checkbox) checkbox.checked = true;
+            if (card) card.classList.add('selected');
         }
     },
 
-    /**
-     * Apply selected recommendations to the features form
-     */
     applyRecommendations() {
         if (this.selectedRecommendations.size === 0) {
-            alert('Please select at least one recommendation to apply.');
+            showNotification('Please select at least one recommendation to apply.', 'error');
             return;
         }
         
-        // Check all selected features in the main form
+        // Uncheck all features first
+        document.querySelectorAll('input[name="features"]').forEach(cb => {
+            cb.checked = false;
+        });
+        
+        // Check selected features
         this.selectedRecommendations.forEach(featureId => {
             const checkbox = document.getElementById(`feature-${featureId}`);
             if (checkbox) {
@@ -352,9 +420,6 @@ const Recommender = {
         this.selectedRecommendations.clear();
     },
 
-    /**
-     * Close recommendation modal
-     */
     closeModal() {
         const modal = document.getElementById('recommendationModal');
         modal.classList.remove('active');
@@ -362,6 +427,7 @@ const Recommender = {
     }
 };
 
+// Global functions for HTML onclick handlers
 function showRecommendations() {
     Recommender.showRecommendations();
 }
@@ -370,17 +436,171 @@ function closeRecommendationModal() {
     Recommender.closeModal();
 }
 
-function toggleRecommendation(featureId) {
-    Recommender.toggleRecommendation(featureId);
-}
-
 function applyRecommendations() {
     Recommender.applyRecommendations();
 }
 
+// Close modal when clicking outside
 document.addEventListener('click', function(event) {
     const modal = document.getElementById('recommendationModal');
     if (event.target === modal) {
         closeRecommendationModal();
+    }
+});
+
+// Add recommendation card styles if not present
+document.addEventListener('DOMContentLoaded', function() {
+    if (!document.getElementById('recommendationStyles')) {
+        const style = document.createElement('style');
+        style.id = 'recommendationStyles';
+        style.innerHTML = `
+            .recommendation-summary {
+                background: #e8f5e9;
+                padding: 20px;
+                border-radius: 8px;
+                margin-bottom: 25px;
+                border-left: 4px solid #4caf50;
+            }
+            
+            .recommendation-stats {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 15px;
+                margin-top: 15px;
+            }
+            
+            .stat-item {
+                text-align: center;
+                padding: 10px;
+                background: white;
+                border-radius: 6px;
+            }
+            
+            .stat-value {
+                font-size: 1.5em;
+                font-weight: bold;
+                color: #4caf50;
+            }
+            
+            .stat-label {
+                font-size: 0.9em;
+                color: #666;
+            }
+            
+            .recommendation-card {
+                background: white;
+                border: 2px solid #e0e0e0;
+                border-radius: 8px;
+                padding: 20px;
+                margin-bottom: 15px;
+                transition: all 0.3s;
+                cursor: pointer;
+            }
+            
+            .recommendation-card:hover {
+                border-color: #4caf50;
+                box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+            }
+            
+            .recommendation-card.selected {
+                border-color: #4caf50;
+                background: #f1f8f4;
+            }
+            
+            .recommendation-card-header {
+                display: flex;
+                align-items: start;
+                margin-bottom: 15px;
+                gap: 15px;
+            }
+            
+            .recommendation-checkbox {
+                margin-top: 5px;
+                width: 20px;
+                height: 20px;
+                cursor: pointer;
+                flex-shrink: 0;
+            }
+            
+            .recommendation-title {
+                flex: 1;
+            }
+            
+            .recommendation-title h4 {
+                color: #2e7d32;
+                margin-bottom: 5px;
+            }
+            
+            .recommendation-badge {
+                display: inline-block;
+                padding: 4px 10px;
+                border-radius: 12px;
+                font-size: 0.75em;
+                font-weight: 600;
+                margin-left: 10px;
+            }
+            
+            .badge-priority-high {
+                background: #ff5722;
+                color: white;
+            }
+            
+            .badge-priority-medium {
+                background: #ff9800;
+                color: white;
+            }
+            
+            .badge-priority-low {
+                background: #2196f3;
+                color: white;
+            }
+            
+            .recommendation-details {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 15px;
+                margin-top: 15px;
+                padding-top: 15px;
+                border-top: 1px solid #e0e0e0;
+            }
+            
+            .detail-item {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            
+            .detail-icon {
+                font-size: 1.2em;
+            }
+            
+            .detail-text {
+                font-size: 0.9em;
+            }
+            
+            .detail-label {
+                color: #666;
+            }
+            
+            .detail-value {
+                font-weight: 600;
+                color: #2e7d32;
+            }
+            
+            .recommendation-reason {
+                background: #fff9e6;
+                padding: 12px;
+                border-radius: 6px;
+                margin-top: 15px;
+                border-left: 3px solid #ffc107;
+                font-size: 0.9em;
+                line-height: 1.6;
+            }
+            
+            .recommendation-reason strong {
+                color: #f57c00;
+            }
+        `;
+        document.head.appendChild(style);
     }
 });
